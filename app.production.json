@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "cleaner-pro",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
+    "newArchEnabled": ture,
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
