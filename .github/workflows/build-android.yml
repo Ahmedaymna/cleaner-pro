@@ -1,53 +1,37 @@
 name: Build Android APK
-
 on:
   push:
     branches: [main, master]
   workflow_dispatch:
-
 jobs:
   build:
-    name: Build APK
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
       - name: Use production configs
         run: |
           cp package.apk.json package.json
           cp app.production.json app.json
-
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
       - name: Expo Prebuild
         run: npx expo prebuild --platform android --clean
-
-      - name: Fix Node path for Gradle
-        run: echo "NODE_BINARY=$(which node)" >> android/gradle.properties
-
-      - name: Make Gradlew executable
-        run: chmod +x android/gradlew
-
+      - name: Fix Node for Gradle
+        run: |
+          echo "NODE_BINARY=$(which node)" >> android/gradle.properties
+          chmod +x android/gradlew
       - name: Build APK
         run: cd android && ./gradlew assembleDebug --no-daemon
         env:
-          JAVA_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=512m"
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+          JAVA_OPTS: "-Xmx4g"
+      - uses: actions/upload-artifact@v4
         with:
           name: Cleaner-Pro-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
