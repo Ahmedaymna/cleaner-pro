@@ -35,11 +35,16 @@ jobs:
       - name: Expo Prebuild
         run: npx expo prebuild --platform android --clean
 
+      - name: Fix Node path for Gradle
+        run: echo "NODE_BINARY=$(which node)" >> android/gradle.properties
+
       - name: Make Gradlew executable
         run: chmod +x android/gradlew
 
       - name: Build APK
         run: cd android && ./gradlew assembleDebug --no-daemon
+        env:
+          JAVA_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=512m"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
